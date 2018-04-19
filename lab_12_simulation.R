@@ -6,29 +6,52 @@ generate_data = function(n, p){
     )
 }
 
+
 model_select = function(covariates, responses, cutoff){
   coeffs = summary(lm(responses ~ covariates))$coefficients
-  p = coeffs[((ncol(covariates)+1)*3 + 1):((ncol(covariates)+1)*4)]
-  sig.vars = covariates[,which(p <= cutoff) - 1]
-  new.coeffs = summary(lm(responses ~ sig.vars))$coefficients
-  p.vector = c()
-  p.vector = cbind(p.vector, new.coeffs[((ncol(sig.vars)+1)*3 + 1):((ncol(sig.vars)+1)*4)])
-  return(
-    list(p.vector)
-  )
+  p = coeffs[,4]
+  sig.vars = covariates[,c((which(p <= cutoff) - 1))]
+  if(sum(sig.vars) > 0){ # Terminate if only the intercept is relevant
+    new.coeffs = summary(lm(responses ~ sig.vars))$coefficients
+    p.vector = new.coeffs[,4]
+    return(
+      list(p.vector)
+    )
+    } else {
+      return(
+        list(c())
+        )
+    }
 }
 
-data = generate_data(100,9)
-covariates = data[[1]]
-responses = data[[2]]
-ps = summary(lm(responses ~ covariates))$coefficients[((ncol(covariates)+1)*3 + 1):((ncol(covariates)+1)*4)]
+run_simulation = function(n_trials, n, p, cutoff){
+  p.vals = c()
+  for(i in 1:(n_trials)){
+    data = generate_data(1000, 20)
+    covariates = data[[1]]
+    responses = data[[2]]
+    p.list = model_select(covariates, responses, 0.05)
+    p.vals = rbind(p.vals, p.list[[1]][i])
+  }
+  p.vals
+  return(hist(p.vals[[1]]))
+}
 
-which(ps <= 0.5) - 1
+run_simulation(n_trials = 1000, n = 100, p = 10, cutoff = 0.5)
 
-sig.vars = covariates[,c((which(ps <= 0.5) - 1))]
+run_simulation(n_trials = 1000, n = 1000, p = 10, cutoff = 0.5)
 
-new.coeffs = summary(lm(responses ~ sig.vars))$coefficients
-p.vector = c()
-p.vector = cbind(p.vector, new.coeffs[((ncol(sig.vars)+1)*3 + 1):((ncol(sig.vars)+1)*4)])
+run_simulation(n_trials = 1000, n = 10000, p = 10, cutoff = 0.5)
 
-model_select(generate_data(5,5)[[1]], generate_data(5,5)[[2]], cutoff = 0.25)
+run_simulation(n_trials = 1000, n = 100, p = 20, cutoff = 0.5)
+
+run_simulation(n_trials = 1000, n = 1000, p = 20, cutoff = 0.5)
+
+run_simulation(n_trials = 1000, n = 10000, p = 20, cutoff = 0.5)
+
+run_simulation(n_trials = 1000, n = 100, p = 50, cutoff = 0.5)
+
+run_simulation(n_trials = 1000, n = 1000, p = 50, cutoff = 0.5)
+
+run_simulation(n_trials = 1000, n = 10000, p = 50, cutoff = 0.5)
+
