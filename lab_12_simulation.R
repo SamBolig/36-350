@@ -31,10 +31,10 @@ run_simulation = function(n_trials, n, p, cutoff){
     covariates = data[[1]]
     responses = data[[2]]
     p.list = model_select(covariates, responses, 0.05)
-    p.vals = rbind(p.vals, p.list[[1]][i])
+    p.vals = c(p.vals, p.list[[1]])
   }
   p.vals
-  return(hist(p.vals[[1]]))
+  return(hist(p.vals))
 }
 
 run_simulation(n_trials = 1000, n = 100, p = 10, cutoff = 0.5)
@@ -55,3 +55,16 @@ run_simulation(n_trials = 1000, n = 1000, p = 50, cutoff = 0.5)
 
 run_simulation(n_trials = 1000, n = 10000, p = 50, cutoff = 0.5)
 
+# part d
+
+run_simulation = function(n_trials, n, p, cutoff){
+  p.vals = c()
+  for(i in 1:(n_trials)){
+    data = generate_data(1000, 20)
+    covariates = data[[1]]
+    responses = data[[2]]
+    p.list = model_select(covariates, responses, 0.05)
+    p.vals = rbind(p.vals, p.list[[1]][i])
+  }
+  return(p.vals)
+}
