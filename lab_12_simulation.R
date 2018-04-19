@@ -66,5 +66,15 @@ run_simulation = function(n_trials, n, p, cutoff){
     p.list = model_select(covariates, responses, 0.05)
     p.vals = rbind(p.vals, p.list[[1]][i])
   }
-  return(p.vals)
+  save(p.vals, file="p.vals.RData")
 }
+
+make_plot = function(datapath){
+  load(datapath)
+  hist(p.vals)
+}
+
+run_simulation(1000, 10000, 10, 0.05)
+
+make_plot("p.vals.RData")
+
