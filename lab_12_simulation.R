@@ -1,6 +1,6 @@
-function(n, p){
+generate_data = function(n, p){
   covariates = matrix(rnorm(p), nrow=n, ncol=p)
-  responses = 
+  responses = as.vector(rnorm(n))
   return(
     list(covariates, responses)
     )
